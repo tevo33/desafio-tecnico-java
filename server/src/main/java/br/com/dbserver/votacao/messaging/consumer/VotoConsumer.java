@@ -11,19 +11,23 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class VotoConsumer {
-
+public class VotoConsumer 
+{
     private final EmailService emailService;
 
-    @KafkaListener(topics = "${app.kafka.topics.voto}", groupId = "${spring.kafka.consumer.group-id}")
-    public void consumirVotoMessage(VotoMessage message) {
-        log.info("Mensagem recebida: {}", message);
+    @KafkaListener( topics = "${app.kafka.topics.voto}", groupId = "${spring.kafka.consumer.group-id}" )
+    public void consumirVotoMessage( VotoMessage message ) 
+    {
+        log.info( "Mensagem recebida: {}", message );
         
-        try {
-            // Enviando email após receber a mensagem
-            emailService.enviarEmailConfirmacaoVoto(message);
-        } catch (Exception e) {
-            log.error("Erro ao processar mensagem de voto: {}", e.getMessage(), e);
+        try 
+        {
+            emailService.enviarEmailConfirmacaoVoto( message );
+        } 
+        
+        catch ( Exception e ) 
+        {
+            log.error( "Erro ao processar mensagem de voto: {}", e.getMessage(), e );
         }
     }
 } 

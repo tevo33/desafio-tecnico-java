@@ -12,29 +12,30 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class VotoProducer {
-
+public class VotoProducer
+{
     private final KafkaTemplate<String, VotoMessage> kafkaTemplate;
     
-    @Value("${app.kafka.topics.voto}")
+    @Value( "${app.kafka.topics.voto}" )
     private String votoTopic;
 
-    public void enviarMensagemVoto(Voto voto) {
+    public void enviarMensagemVoto( Voto voto ) 
+    {
         VotoMessage message = new VotoMessage(
-            voto.getProfissional().getId(),
-            voto.getProfissional().getNome(),
-            voto.getProfissional().getEmail(),
-            voto.getRestaurante().getId(),
-            voto.getRestaurante().getNome(),
-            voto.getData()
+                              voto.getProfissional().getId(),
+                              voto.getProfissional().getNome(),
+                              voto.getProfissional().getEmail(),
+                              voto.getRestaurante().getId(),
+                              voto.getRestaurante().getNome(),
+                              voto.getData()
         );
         
-        log.info("Enviando mensagem para o tópico {}: {}", votoTopic, message);
+        log.info( "Enviando mensagem para o tópico {}: {}", votoTopic, message );
         
-        kafkaTemplate.send(votoTopic, String.valueOf(voto.getProfissional().getId()), message)
-            .addCallback(
-                result -> log.info("Mensagem enviada com sucesso para o tópico {}", votoTopic),
-                ex -> log.error("Falha ao enviar mensagem para o tópico {}: {}", votoTopic, ex.getMessage())
+        kafkaTemplate.send( votoTopic, String.valueOf( voto.getProfissional().getId() ), message )
+                     .addCallback(
+                result -> log.info( "Mensagem enviada com sucesso para o tópico {}", votoTopic ),
+                ex -> log.error( "Falha ao enviar mensagem para o tópico {}: {}", votoTopic, ex.getMessage() )
             );
     }
 } 
