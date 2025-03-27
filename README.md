@@ -59,3 +59,157 @@ Critério de Aceitação:
 
 </br></br>
 Obrigado por dedicar parte do seu tempo! Esperamos ansiosamente a sua resposta! 
+
+# Sistema de Votação de Restaurantes
+
+Este sistema foi desenvolvido para auxiliar na escolha diária de restaurantes para almoço em equipe, baseado nas estórias descritas no desafio.
+
+## Funcionalidades
+
+1. **Votação de Restaurantes**
+   - Cada profissional pode votar apenas uma vez por dia
+   - O sistema impede que o mesmo restaurante seja escolhido mais de uma vez na semana
+   - O resultado da votação é disponibilizado antes do meio-dia
+   
+2. **Sistema de Mensageria**
+   - Toda vez que um usuário vota, o sistema envia uma mensagem para o Kafka
+   - Um consumidor processa a mensagem e envia um email de confirmação para o usuário
+   - O email contém os detalhes do voto registrado
+
+## Tecnologias Utilizadas
+
+### Backend
+- Java 17
+- Spring Boot 3.2.3
+- Spring Data JPA
+- H2 Database (banco de dados em memória)
+- Spring Kafka
+- Spring Mail
+- Lombok
+- Maven
+- JUnit 5 (para testes)
+
+### Frontend
+- React 18
+- TypeScript
+- Material-UI
+- Axios
+- React Router
+
+### Infraestrutura
+- Apache Kafka
+- Zookeeper
+- Docker & Docker Compose
+
+## Pré-requisitos
+
+- Java 17 ou superior
+- Node.js 18 ou superior
+- Maven
+- npm ou yarn
+- Docker e Docker Compose (para rodar o Kafka e Zookeeper)
+
+## Executando a Aplicação
+
+### Infraestrutura (Kafka e Zookeeper)
+
+1. Inicie os containers do Kafka e Zookeeper:
+```bash
+docker-compose up -d
+```
+
+Isso irá iniciar o Zookeeper, o Kafka e uma interface web para o Kafka (disponível em `http://localhost:8090`).
+
+### Backend
+
+1. Navegue até a pasta do servidor:
+```bash
+cd server
+```
+
+2. Configure as variáveis de ambiente para o envio de emails (ou edite o arquivo `application.yml`):
+```bash
+export EMAIL_USERNAME=seu-email@gmail.com
+export EMAIL_PASSWORD=sua-senha-de-app
+```
+
+3. Compile e execute o projeto:
+```bash
+mvn spring-boot:run
+```
+
+A API estará disponível em `http://localhost:8080/api`
+
+### Frontend
+
+1. Navegue até a pasta do cliente:
+```bash
+cd client
+```
+
+2. Instale as dependências:
+```bash
+npm install
+```
+
+3. Execute a aplicação:
+```bash
+npm start
+```
+
+O frontend estará disponível em `http://localhost:3000`
+
+## API REST
+
+### Endpoints Principais
+
+| Método | URL | Descrição |
+|--------|-----|-----------|
+| GET | `/api/restaurantes` | Lista todos os restaurantes |
+| GET | `/api/restaurantes/disponiveis` | Lista restaurantes disponíveis para votação (não escolhidos na semana) |
+| GET | `/api/profissionais` | Lista todos os profissionais |
+| POST | `/api/votacao/votar` | Registra um voto e envia email de confirmação |
+| GET | `/api/votacao/resultado` | Obtém o resultado da votação do dia |
+| GET | `/api/votacao/votos/hoje` | Obtém os votos do dia |
+
+## Testes
+
+### Backend
+
+Para executar os testes do backend:
+```bash
+cd server
+mvn test
+```
+
+### Frontend
+
+Para executar os testes do frontend:
+```bash
+cd client
+npm test
+```
+
+## Arquitetura do Sistema de Mensageria
+
+O sistema de mensageria utiliza o Apache Kafka como middleware de mensagens:
+
+1. **Produtor**: Quando um usuário vota, o sistema gera uma mensagem com os detalhes do voto e envia para o tópico `voto-topic`.
+
+2. **Consumidor**: Um serviço consome as mensagens do tópico e processa o envio de emails.
+
+3. **Email**: Utiliza o Spring Mail para enviar emails de confirmação com os detalhes do voto.
+
+Esta arquitetura proporciona:
+- Desacoplamento entre o registro do voto e o envio de emails
+- Tolerância a falhas (se o serviço de email estiver indisponível, os votos continuam sendo registrados)
+- Escalabilidade (múltiplos consumidores podem processar mensagens em paralelo)
+
+## Destaques do Projeto
+
+- **Arquitetura**: Aplicação separada em camadas (controllers, services, repositories, models)
+- **API RESTful**: Comunicação entre frontend e backend via API REST
+- **Segurança**: Validações para evitar votos duplicados e restaurantes repetidos
+- **Interface Responsiva**: Utilização do Material-UI para uma interface moderna e adaptável
+- **Testes Automatizados**: Cobertura de testes unitários para validar o funcionamento
+- **Mensageria**: Utilização do Kafka para comunicação assíncrona 

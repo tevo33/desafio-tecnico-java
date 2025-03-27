@@ -12,6 +12,37 @@ spring:
     console:
       enabled: true
       path: /h2-console
+  # Configuração do Kafka
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: votacao-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: br.com.dbserver.votacao.messaging.dto
+  # Configuração do serviço de email
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL_USERNAME:seu-email@gmail.com}
+    password: ${EMAIL_PASSWORD:sua-senha}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 server:
-  port: 8080 
+  port: 8080
+
+# Configuração de tópicos do Kafka
+app:
+  kafka:
+    topics:
+      voto: voto-topic 
