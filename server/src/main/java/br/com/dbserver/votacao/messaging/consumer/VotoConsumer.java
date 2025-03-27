@@ -2,6 +2,7 @@ package br.com.dbserver.votacao.messaging.consumer;
 
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import br.com.dbserver.votacao.messaging.dto.VotoMessage;
 import br.com.dbserver.votacao.messaging.service.EmailService;
@@ -11,23 +12,24 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@ConditionalOnProperty(name = "app.messaging.enabled", havingValue = "true")
 public class VotoConsumer 
 {
     private final EmailService emailService;
 
-    @KafkaListener( topics = "${app.kafka.topics.voto}", groupId = "${spring.kafka.consumer.group-id}" )
-    public void consumirVotoMessage( VotoMessage message ) 
+    @KafkaListener(topics = "${app.kafka.topics.voto}", groupId = "${spring.kafka.consumer.group-id}")
+    public void consumirVotoMessage(VotoMessage message) 
     {
-        log.info( "Mensagem recebida: {}", message );
+        log.info("Mensagem recebida: {}", message);
         
         try 
         {
-            emailService.enviarEmailConfirmacaoVoto( message );
+            emailService.enviarEmailConfirmacaoVoto(message);
         } 
         
-        catch ( Exception e ) 
+        catch (Exception e) 
         {
-            log.error( "Erro ao processar mensagem de voto: {}", e.getMessage(), e );
+            log.error("Erro ao processar mensagem de voto: {}", e.getMessage(), e);
         }
     }
 } 

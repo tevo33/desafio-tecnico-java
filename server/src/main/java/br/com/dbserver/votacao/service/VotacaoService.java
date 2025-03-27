@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.dbserver.votacao.messaging.producer.VotoProducer;
+import br.com.dbserver.votacao.messaging.producer.VotoProducerMock;
 import br.com.dbserver.votacao.model.Profissional;
 import br.com.dbserver.votacao.model.Restaurante;
 import br.com.dbserver.votacao.model.ResultadoVotacao;
@@ -32,8 +33,11 @@ public class VotacaoService
     @Autowired
     private ResultadoVotacaoRepository resultadoRepository;
     
-    @Autowired
+    @Autowired(required = false)
     private VotoProducer votoProducer;
+    
+    @Autowired(required = false)
+    private VotoProducerMock votoProducerMock;
     
     @Transactional
     public Voto votar(Voto voto) throws Exception 
@@ -52,11 +56,8 @@ public class VotacaoService
         Voto votoSalvo = votoRepository.save( voto );
         log.info("Voto registrado com sucesso: {}", votoSalvo);
         
-        try {
-            votoProducer.enviarMensagemVoto(votoSalvo);
-        } catch (Exception e) {
-            log.error("Erro ao enviar mensagem para o Kafka: {}", e.getMessage(), e);
-        }
+        // Enviar mensagem usando o produtor apropriado
+        enviarMensagemVoto(votoSalvo);
         
         return votoSalvo;
     }
@@ -103,5 +104,17 @@ public class VotacaoService
     public List<Voto> findVotosByData( LocalDate data ) 
     {
         return votoRepository.findByData( data );
+    }
+    
+    private void enviarMensagemVoto(Voto voto) {
+        if (votoProducer != null) {
+            log.info("Usando VotoProducer para enviar mensagem");
+            votoProducer.enviarMensagemVoto(voto);
+        } else if (votoProducerMock != null) {
+            log.info("Usando VotoProducerMock para enviar mensagem");
+            votoProducerMock.enviarMensagemVoto(voto);
+        } else {
+            log.warn("Nenhum produtor de voto configurado (nem real nem mock)");
+        }
     }
 } 
