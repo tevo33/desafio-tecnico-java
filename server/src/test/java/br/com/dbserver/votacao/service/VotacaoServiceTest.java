@@ -6,8 +6,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -24,8 +22,8 @@ import br.com.dbserver.votacao.repository.RestauranteRepository;
 import br.com.dbserver.votacao.repository.ResultadoVotacaoRepository;
 import br.com.dbserver.votacao.repository.VotoRepository;
 
-public class VotacaoServiceTest {
-
+public class VotacaoServiceTest 
+{
     @Mock
     private VotoRepository votoRepository;
     
@@ -47,8 +45,8 @@ public class VotacaoServiceTest {
     {
         MockitoAnnotations.openMocks( this );
         
-        profissional = new Profissional( 1L, "Teste", "teste@dbserver.com.br" );
-        restaurante = new Restaurante( 1L, "Restaurante Teste", "Endereço Teste", "Tipo Teste" );
+        profissional = new Profissional( 1L, "teste", "teste@email.com.br" );
+        restaurante = new Restaurante( 1L, "restaurante teste", "endereço teste", "tipo teste" );
         
         voto = new Voto();
         voto.setProfissional( profissional );
@@ -75,7 +73,7 @@ public class VotacaoServiceTest {
         Exception exception = assertThrows( Exception.class, () -> 
         {
             votacaoService.votar( voto );
-        });
+        } );
         
         assertEquals( "Profissional já votou hoje!", exception.getMessage() );
     }
@@ -85,7 +83,7 @@ public class VotacaoServiceTest {
     {
         ResultadoVotacao resultadoEsperado = new ResultadoVotacao( 1L, restaurante, LocalDate.now(), 5 );
         
-        when(resultadoRepository.findByData( any( LocalDate.class ) ) ).thenReturn( Optional.of ( resultadoEsperado ) );
+        when( resultadoRepository.findByData( any( LocalDate.class ) ) ).thenReturn( Optional.of ( resultadoEsperado ) );
         
         ResultadoVotacao resultado = votacaoService.getResultadoVotacao();
         

@@ -5,9 +5,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import br.com.dbserver.votacao.exception.ResourceNotFoundException;
-import br.com.dbserver.votacao.exception.VotacaoException;
-
 @RestControllerAdvice
 public class GlobalExceptionHandler 
 {

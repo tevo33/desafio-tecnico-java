@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,19 +13,16 @@ import br.com.dbserver.votacao.exception.ResourceNotFoundException;
 import br.com.dbserver.votacao.exception.VotacaoException;
 import br.com.dbserver.votacao.messaging.producer.VotoProducer;
 import br.com.dbserver.votacao.messaging.producer.VotoProducerMock;
-import br.com.dbserver.votacao.model.Profissional;
 import br.com.dbserver.votacao.model.Restaurante;
 import br.com.dbserver.votacao.model.ResultadoVotacao;
 import br.com.dbserver.votacao.model.Voto;
 import br.com.dbserver.votacao.repository.RestauranteRepository;
 import br.com.dbserver.votacao.repository.ResultadoVotacaoRepository;
 import br.com.dbserver.votacao.repository.VotoRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class VotacaoService 
 {
     private final VotoRepository votoRepository;
@@ -32,6 +30,17 @@ public class VotacaoService
     private final ResultadoVotacaoRepository resultadoRepository;
     private final VotoProducer votoProducer;
     private final VotoProducerMock votoProducerMock;
+    
+    public VotacaoService( VotoRepository votoRepository, RestauranteRepository restauranteRepository,
+                           ResultadoVotacaoRepository resultadoRepository, @Nullable VotoProducer votoProducer,
+                           @Nullable VotoProducerMock votoProducerMock) 
+    {
+        this.votoRepository = votoRepository;
+        this.restauranteRepository = restauranteRepository;
+        this.resultadoRepository = resultadoRepository;
+        this.votoProducer = votoProducer;
+        this.votoProducerMock = votoProducerMock;
+    }
     
     @Transactional
     public Voto votar( Voto voto )

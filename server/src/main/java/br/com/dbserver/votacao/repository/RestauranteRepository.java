@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import br.com.dbserver.votacao.model.Restaurante;
-import br.com.dbserver.votacao.model.ResultadoVotacao;
 
 @Repository
 public interface RestauranteRepository extends JpaRepository<Restaurante, Long> 
