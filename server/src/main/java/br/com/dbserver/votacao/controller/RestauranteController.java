@@ -1,9 +1,7 @@
 package br.com.dbserver.votacao.controller;
 
 import java.util.List;
-import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,15 +16,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.dbserver.votacao.model.Restaurante;
 import br.com.dbserver.votacao.service.RestauranteService;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping( "/api/restaurantes" )
 @CrossOrigin( origins = "*" )
+@RequiredArgsConstructor
 public class RestauranteController 
 {
-
-    @Autowired
-    private RestauranteService service;
+    private final RestauranteService service;
     
     @GetMapping
     public ResponseEntity<List<Restaurante>> findAll()
@@ -41,11 +39,9 @@ public class RestauranteController
     }
     
     @GetMapping( "/{id}" )
-    public ResponseEntity<Restaurante> findById(@PathVariable Long id) 
+    public ResponseEntity<Restaurante> findById( @PathVariable Long id )
     {
-        Optional<Restaurante> restaurante = service.findById( id );
-    
-        return restaurante.map( ResponseEntity::ok ).orElse( ResponseEntity.notFound().build() );
+        return ResponseEntity.ok( service.findById( id ) );
     }
     
     @PostMapping
@@ -57,26 +53,16 @@ public class RestauranteController
     @PutMapping( "/{id}" )
     public ResponseEntity<Restaurante> update( @PathVariable Long id, @RequestBody Restaurante restaurante ) 
     {
-        if ( ! service.findById( id ).isPresent() ) 
-        {
-            return ResponseEntity.notFound().build();
-        }
-        
         restaurante.setId( id );
 
         return ResponseEntity.ok( service.save( restaurante ) );
     }
     
     @DeleteMapping( "/{id}" )
-    public ResponseEntity<Void> delete( @PathVariable Long id ) 
+    public ResponseEntity<Void> delete( @PathVariable Long id )
     {
-        if ( ! service.findById( id ).isPresent() ) 
-        {
-            return ResponseEntity.notFound().build();
-        }
-        
         service.delete( id );
-        
+
         return ResponseEntity.noContent().build();
     }
 } 

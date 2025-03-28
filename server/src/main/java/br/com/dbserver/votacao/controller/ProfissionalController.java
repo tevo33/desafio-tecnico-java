@@ -1,9 +1,7 @@
 package br.com.dbserver.votacao.controller;
 
 import java.util.List;
-import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,15 +16,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.dbserver.votacao.model.Profissional;
 import br.com.dbserver.votacao.service.ProfissionalService;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping( "/api/profissionais" )
 @CrossOrigin( origins = "*" )
-
+@RequiredArgsConstructor
 public class ProfissionalController 
 {
-    @Autowired
-    private ProfissionalService service;
+    private final ProfissionalService service;
     
     @GetMapping
     public ResponseEntity<List<Profissional>> findAll() 
@@ -37,9 +35,7 @@ public class ProfissionalController
     @GetMapping( "/{id}" )
     public ResponseEntity<Profissional> findById( @PathVariable Long id ) 
     {
-        Optional<Profissional> profissional = service.findById( id );
-
-        return profissional.map( ResponseEntity::ok ).orElse( ResponseEntity.notFound().build() );
+        return ResponseEntity.ok( service.findById( id ) );
     }
     
     @PostMapping
@@ -51,11 +47,6 @@ public class ProfissionalController
     @PutMapping( "/{id}" )
     public ResponseEntity<Profissional> update( @PathVariable Long id, @RequestBody Profissional profissional ) 
     {
-        if ( ! service.findById( id ).isPresent() ) 
-        {
-            return ResponseEntity.notFound().build();
-        }
-        
         profissional.setId( id );
         return ResponseEntity.ok( service.save( profissional ) );
     }
@@ -63,11 +54,6 @@ public class ProfissionalController
     @DeleteMapping( "/{id}" )
     public ResponseEntity<Void> delete( @PathVariable Long id ) 
     {
-        if ( ! service.findById( id ).isPresent() ) 
-        {
-            return ResponseEntity.notFound().build();
-        }
-        
         service.delete( id );
 
         return ResponseEntity.noContent().build();
